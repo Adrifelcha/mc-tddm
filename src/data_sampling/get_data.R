@@ -22,9 +22,9 @@ load_or_generate_data <- function(data_path, n, par) {
       } else {
         # If parameters differ, generate new data with current parameters
         cat("Parameters changed. Generating new data...\n")
-        data <- rCDDM_RandomWalk(n, par)
+        data <- rCDDM_RandomWalk(n, this.par)
         data <- data$bivariate.data
-        save(data, par, file = data_path)
+        save(data, this.par, file = data_path)
       }
     } else {
       # If data file doesn't exist, generate and save new data
