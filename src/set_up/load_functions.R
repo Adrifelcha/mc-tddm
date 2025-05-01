@@ -8,8 +8,10 @@
 ruler <- paste(rep("=", 60), collapse = "")
 sub_ruler <- paste(rep("-", 40), collapse = "")
 
-load_allCustomFunctions <- function(source_dir = here("src"), 
-                                    ruler = ruler, sub_ruler = sub_ruler) {
+load_allCustomFunctions <- function(source_dir = here("src")) {
+  ruler <- paste(rep("=", 60), collapse = "")
+  sub_ruler <- paste(rep("-", 40), collapse = "")
+
   cat("\n", ruler, "\n")
   cat(" LOADING CUSTOM FUNCTIONS FROM:\n")
   cat(paste(" ", source_dir, "\n"))
