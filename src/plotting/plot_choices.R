@@ -126,11 +126,12 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
     
     # Add label
     if (angle == 0) {                           label <- "0"
-    } else if (abs(angle - pi/2) < 1e-10) {     label <- "π/2"
-    } else if (abs(angle - pi) < 1e-10) {       label <- "π"
-    } else if (abs(angle - 3*pi/2) < 1e-10) {   label <- "3π/2"
-    } else if (abs(angle - 2*pi) < 1e-10) {     label <- "2π"
-    } else {                                    label <- sprintf("%.2f", angle)        }
+    } else if (abs(angle - pi/2) < 1e-10) {     label <- expression(pi/2)
+    } else if (abs(angle - pi) < 1e-10) {       label <- expression(pi)
+    } else if (abs(angle - 3*pi/2) < 1e-10) {   label <- expression(3*pi/2)
+    } else if (abs(angle - 2*pi) < 1e-10) {     label <- expression(2*pi)
+    } else {                                    label <- sprintf("%.2f", angle)
+    }
     
     text((boundary + 1.5*tick_length)*cos(angle),
          (boundary + 1.5*tick_length)*sin(angle),
