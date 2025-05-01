@@ -2,7 +2,7 @@
 get_categorical_choices <- function(data, cut_points = c(0, pi/2, pi, 3*pi/2),
                                     categories = c("A", "B", "C", "D")) {
     # Ensure choices are within the (0,2pi) range
-    data$Choice <- data$Choice %% 2*pi
+    data$Choice[1:10] <- data$Choice[1:10] %% (2*pi)
     
     # If the first cut point is 0, make sure the circle is closed
     if(cut_points[1] == 0){
