@@ -15,12 +15,15 @@ ezcddm_getParameters <- function(summaryStats) {
 
     # Step 1: Drift angle
     drift_angle <- MCA
+
     # Step 2: Intermediate variables
-    R <- 1 - VCA
-    k0 <- (R*(2-R^2))/(1-R^2)
-    I1 <- besselI(k0, nu = 1)  # First kind, order 1
-    I0 <- besselI(k0, nu = 0)  # First kind, order 0
-    k1 <- k0 - (((I1/I0)-R)/(1 - (I1^2/I0^2) - (I1/(k0*I0))))
+    R <- 1 - VCA                              # Mean resultant length
+    k0 <- ( R* ( 2- (R^2) ) ) / (1 - (R^2) )  # Concentration parameter
+    I1 <- besselI(k0, nu = 1)  # First kind of modified Bessel function, order 1
+    I0 <- besselI(k0, nu = 0)  # First kind of modified Bessel function, order 0
+    k1_num <- (I1/I0)-R
+    k1_den <- 1 - (I1/I0)^2 - (I1/I0)/k0
+    k1 <- k0 - (k1_num/k1_den)
     # Step 3: Drift length
     root <- 1/4    
     drift_length <- ((1/VRT)*((k1^2*R^2)+(2*k1*R)-(k1^2)))^root
