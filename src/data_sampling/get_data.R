@@ -10,9 +10,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
 
 # Function to load or generate data
-load_or_generate_data <- function(data_path, n, par) {
+load_or_generate_data <- function(data_path, n, par, forceRun = FALSE) {
     # Check if the data file already exists
-    if(file.exists(data_path)) {
+    if(file.exists(data_path) && !forceRun) {
       # If data exists, check if parameters are the same
       this.par <- par
       load(data_path)
@@ -28,7 +28,7 @@ load_or_generate_data <- function(data_path, n, par) {
       }
     } else {
       # If data file doesn't exist, generate and save new data
-      cat("Data file not found. Generating new data...\n")
+      cat("Generating new data...\n")
       data <- rCDDM_RandomWalk(n, par)
       data <- data$bivariate.data
       save(data, par, file = data_path)
