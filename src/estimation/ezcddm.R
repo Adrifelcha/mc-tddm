@@ -24,16 +24,19 @@ ezcddm_getParameters <- function(summaryStats) {
     k1_num <- (I1/I0)-R
     k1_den <- 1 - (I1/I0)^2 - (I1/I0)/k0
     k1 <- k0 - (k1_num/k1_den)
+    
     # Step 3: Drift length
     root <- 1/4    
     drift_length <- ((1/VRT)*((k1^2*R^2)+(2*k1*R)-(k1^2)))^root
+    
     # Step 4: Bound
     bound <- k1/drift_length
+    
     # Step 5: Non-decision time
     ndt <- MRT - ((bound/drift_length)*R)
 
     # Step 6: Return parameters
-    output <- list("drift_length" = drift_length, "bound" = bound, "ndt" = ndt, "drift_angle" = drift_angle)
+    output <- list("drift_length" = drift_length, "drift_angle" = drift_angle, "bound" = bound, "ndt" = ndt)
     return(output)
 }
 
