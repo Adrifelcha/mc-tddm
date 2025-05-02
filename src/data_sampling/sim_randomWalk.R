@@ -51,7 +51,7 @@ rCDDM_RandomWalk <- function(n, par, drift.Coeff=1, dt=0.001){
     }else{
       Mu <- polarToRect(drift.Angle,drift.Length)
       mu1 <- Mu$x
-      mu2 <-Mu$y
+      mu2 <- Mu$y
     }
   }
 
