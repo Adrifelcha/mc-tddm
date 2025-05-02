@@ -16,9 +16,13 @@ get_choice_in_arc <- function(data, cut_points = c(0, pi/2, pi, 3*pi/2),
     # Assign the angular choice for each category
     from <- 1
     to <- 2
-    for(cat in names(category_counts)){
+    for(cat in categories){
         # Get a plausible angular choice for the arc region of the category
-        arc_position <- runif(category_counts[cat], cut_points[from], cut_points[to])
+        if(!is.na(category_counts[cat])){
+            arc_position <- runif(category_counts[cat], cut_points[from], cut_points[to])
+        } else {
+            arc_position <- NA
+        }
         # Update the from and to indices
         from <- from + 1
         to <- to + 1
