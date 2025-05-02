@@ -21,7 +21,7 @@ load_allCustomFunctions() # Call the rest of the functions
 cat("\n", ruler, "\n","Generating data...\n", ruler, "\n")
 
 # Define data generation parameters
-n <- 1000     # No. trials
+n <- 2000     # No. trials
 par <- list(drift = 2.0,         # Drift length
             angle = 0.2,          # Drift angle
             boundary = 2,    # Boundary
@@ -42,7 +42,7 @@ data_path <- here("output", "toyData.RData")
 
 cat(sub_ruler, "\n", "Preparing data...\n")
 # Look for datafile and load if it exists, otherwise generate new data
-data <- load_or_generate_data(data_path, n, par)
+data <- load_or_generate_data(data_path, n, par, forceRun = TRUE)
 cat(sub_ruler, "\n")
 
 show <- 10  # Number of trials to show
@@ -73,9 +73,12 @@ cat(sub_ruler, "\n")
 #~~~~~~ Categorical implementation: Transform data ~~~~~~~~~
 ############################################################
 cat("\n", ruler, "\n","Responses are converted into categories...\n", ruler, "\n")
+categories = c("A", "B", "C", "D", "E", "F", "G", "H")
+cut_points = c(0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4)
 
-cut_points = c(0, pi/2, pi, 3*pi/2)
-categories = c("A", "B", "C", "D")
+#cut_points = c(0, pi/2, pi, 3*pi/2)
+#categories = c("A", "B", "C", "D")
+
 # Convert choices to categorical values
 data <- get_categorical_choices(data, cut_points, categories)
 
@@ -92,7 +95,7 @@ dev.off()
 ############################################################
 #~~~~~~~~~~ Run Monte Carlo approximation ~~~~~~~~~~~~~~~~~
 ############################################################
-nIter <- 1000
+nIter <- 5000
 
 cat("\n", ruler, "\n","Run Monte Carlo approximation...\n", ruler, "\n", sub_ruler, "\n", 
     "We run the Monte Carlo approximation over", nIter, "iterations.\n")
@@ -109,11 +112,9 @@ for(i in 1:nIter){
 estimates <- as.data.frame(estimates)
 colnames(estimates) <- c("drift_length", "bound", "ndt", "drift_angle")
 
-
-
-rbind(apply(estimates, 2, mean), ez_params, c(par$drift, par$boundary, par$tzero, par$angle))
-
-
+update_results <-rbind(results, apply(estimates, 2, mean))
+rownames(update_results) <- c(rownames(results), "MC-EZCDDM")
+print(update_results)
 
 png(here("short-demo", "fig2_recovery.png"), width = 800, height = 800)
 plot_recovery(estimates, par)
