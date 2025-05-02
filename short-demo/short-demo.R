@@ -21,11 +21,11 @@ load_allCustomFunctions() # Call the rest of the functions
 cat("\n", ruler, "\n","Generating data...\n", ruler, "\n")
 
 # Define data generation parameters
-n <- 500     # No. trials
-par <- list(drift = 1,         # Drift length
-            angle = 2,         # Drift angle
-            boundary = 2.5,    # Boundary
-            tzero = 0.2)       # Non-decision time
+n <- 1000     # No. trials
+par <- list(drift = 2.0,         # Drift length
+            angle = 0.2,          # Drift angle
+            boundary = 2,    # Boundary
+            tzero = 0.6)       # Non-decision time
 # Add the polar/rectangular coordinates as needed
 par <- complete_par_list(par)
 
@@ -59,6 +59,14 @@ sumstats <- get_summaryStats(angular_vector = data$Response, rt_vector = data$RT
 # Compute parameter estimates using the EZCDDM
 ez_params <- ezcddm_getParameters(sumstats)
 cat(sub_ruler, "\n")
+
+results <- as.data.frame(rbind(c(par$drift, par$boundary, par$tzero, par$angle),
+                               c(ez_params$drift_length, ez_params$bound, ez_params$ndt, ez_params$drift_angle)))
+results <- round(results, 4)
+colnames(results) <- c("Drift_length", "Boundary", "Non-decision_time", "Drift_angle")
+rownames(results) <- c("True", "EZCDDM")
+print(results)
+
 cat(sub_ruler, "\n")
 
 ############################################################
