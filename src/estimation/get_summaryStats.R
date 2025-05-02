@@ -15,7 +15,9 @@ get_summaryStats <- function(angular_vector, rt_vector) {
     N <- length(ang)  # Total number of observations/trials
     
     # Calculate Mean Circular Angle (MCA) using circular statistics
-    MCA <- atan2(1/N*sum(sin(ang)), 1/N*sum(cos(ang)))
+    sin_sum <- 1/N*sum(sin(ang))
+    cos_sum <- 1/N*sum(cos(ang))
+    MCA <- atan2(sin_sum, cos_sum)
     
     # Calculate Variance of Circular Angle (VCA)
     # VCA ranges from 0 (perfect concentration) to 1 (uniform dispersion)
