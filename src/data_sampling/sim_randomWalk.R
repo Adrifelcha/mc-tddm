@@ -74,7 +74,7 @@ rCDDM_RandomWalk <- function(n, par, drift.Coeff=1, dt=0.001){
   radians <- round(rad,4)
   
   data <- as.data.frame(cbind(radians,RT))
-  colnames(data) <- c("Choice","RT")
+  colnames(data) <- c("Response","RT")
   
   output <- list("random.walk" = randomWalk,
                  "bivariate.data" = data)
