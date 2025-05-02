@@ -30,20 +30,16 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
     cut_points <- c(cut_points, 2*pi)
   }
   
-  # Save current graphical parameters to restore later
-  old_par <- par(no.readonly = TRUE)
-  on.exit(par(old_par))  
-  
   # Set graphical parameters for a square plot with minimal margins
   par(mar = c(2, 2, 2, 2), pty = "s")  # 's' creates a square plotting region
   
   # Identify the cartesian coordinates of the choices
-  data_rect <- polarToRect(data$Choice, boundary)
+  data_rect <- polarToRect(data$Response, boundary)
   x <- data_rect$x
   y <- data_rect$y
 
   # Identify the categories of the choices
-  categories <- data$cat    
+  categories <- data$Category    
   all_cats <- sort(unique(categories))
   
   # Set up default colors if not provided
@@ -139,10 +135,14 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
   }
   
   # Add parameter information at the bottom using expression for Greek letters
-  mtext(expression(paste(theta, " = ", theta.val, ", ", 
+  mtext(substitute(paste(theta, " = ", theta.val, ", ", 
                          delta, " = ", drift.val, ", ", 
                          "t"[0], " = ", tzero.val, ", ",
-                         eta, " = ", boundary.val)), 
+                         eta, " = ", boundary.val),
+                  list(theta.val = parameter_list$theta,
+                       drift.val = parameter_list$drift,
+                       tzero.val = parameter_list$tzero,
+                       boundary.val = parameter_list$boundary)), 
         side = 1, line = 1, cex = 1.5)
 }
 #' Example usage:
