@@ -54,10 +54,17 @@ ss_test <- get_summaryStats(angular_vector = CA, rt_vector = RT)
 # Compute parameter estimates using the EZCDDM
 ez_test <- ezcddm_getParameters(ss_test)
 
-true <- c(2,0.2,2,0.6)
+# Make sure parameters are in the correct order for comparison
+true <- c(2, 0.2, 2, 0.6)  # drift_length, drift_angle, bound, ndt
 estimates <- c(ez_test$drift_length, ez_test$drift_angle, ez_test$bound, ez_test$ndt)
 
-rbind(true, estimates)
+# Print results with parameter names for clarity
+result_df <- data.frame(
+  Parameter = c("drift_length", "drift_angle", "bound", "ndt"),
+  True = true,
+  Estimated = estimates
+)
+print(result_df)
 
 
 
