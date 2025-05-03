@@ -73,11 +73,12 @@ cat(sub_ruler, "\n")
 #~~~~~~ Categorical implementation: Transform data ~~~~~~~~~
 ############################################################
 cat("\n", ruler, "\n","Responses are converted into categories...\n", ruler, "\n")
-categories = c("A", "B", "C", "D", "E", "F", "G", "H")
-cut_points = c(0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4, 3*pi/2, 7*pi/4)
 
-#cut_points = c(0, pi/2, pi, 3*pi/2)
-#categories = c("A", "B", "C", "D")
+# Number of categories
+nCat <- 4
+categories = LETTERS[1:nCat]   # Obtaing category labels
+# Obtain cut points for the categories (equally spaced on the circle; remove the closed point)
+cut_points = seq(0, 2*pi, length.out = nCat+1)[-(nCat+1)]
 
 # Convert choices to categorical values
 data <- get_categorical_choices(data, cut_points, categories)
