@@ -9,8 +9,8 @@
 # available in the current R session.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!
 plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
-                                color_palette = NULL, point_size = 1.5,
-                                point_alpha = 0.5) {
+                                categories = NULL, color_palette = NULL,
+                                point_size = 1.5, point_alpha = 0.5) {
   ########################################
   # Set up for plotting
   ########################################  
@@ -18,16 +18,17 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
   boundary <- parameter_list$boundary
 
   # Check if cut_points are provided
-  if(is.null(cut_points)) {
-    stop("cut_points must be provided")
+  if(is.null(cut_points)|is.null(categories)) {
+    stop("cut_points and categories must be provided")
   }
   
   # Ensure cut_points are in ascending order
-  cut_points <- sort(cut_points)
-  
-  # If the last cut point is not 2*pi, add it
-  if(abs(cut_points[length(cut_points)] - 2*pi) > 1e-10) {
-    cut_points <- c(cut_points, 2*pi)
+  cut_points <- sort(cut_points)  
+  # If the first cut point is 0, make sure the circle is closed
+  if(cut_points[1] == 0){
+    if(cut_points[length(cut_points)] != 2*pi){
+      cut_points <- c(cut_points, 2*pi)
+    }
   }
   
   # Set graphical parameters for a square plot with minimal margins
@@ -38,14 +39,16 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
   x <- data_rect$x
   y <- data_rect$y
 
-  # Identify the categories of the choices
-  categories <- data$Category    
+  # Identify the categories of the choices  
   all_cats <- sort(unique(categories))
   
   # Set up default colors if not provided
   if (is.null(color_palette)) {
     default_colors <- c("red", "blue", "green", "purple", "orange", 
-                        "cyan", "magenta", "yellow")
+                        "cyan", "magenta", "yellow", "darkgreen", "navy",
+                        "firebrick", "darkorchid", "darkgoldenrod", "deepskyblue",
+                        "darkslategray", "hotpink", "indianred", "limegreen",
+                        "mediumorchid", "steelblue")
     color_palette <- setNames(default_colors[1:length(all_cats)], all_cats)
   }
   
@@ -103,7 +106,7 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
   for (i in 1:length(all_cats)) {
     label_at <- polarToRect(category_centers[i], boundary * 0.7)
     text(label_at$x, label_at$y, labels = all_cats[i], 
-         font = 2, cex = 1.5, col = color_palette[all_cats[i]])
+         font = 2, cex = 1.5, col = "black")
   }
   
   # Add tick marks and labels at cut points
@@ -135,11 +138,11 @@ plot_choices_circle <- function(data, parameter_list, cut_points = NULL,
   }
   
   # Add parameter information at the bottom using expression for Greek letters
-  mtext(substitute(paste(theta, " = ", theta.val, ", ", 
-                         delta, " = ", drift.val, ", ", 
-                         "t"[0], " = ", tzero.val, ", ",
+  mtext(substitute(paste(theta, " = ", theta.val, "     ", 
+                         delta, " = ", drift.val, "     ", 
+                         "t"[0], " = ", tzero.val, "     ",
                          eta, " = ", boundary.val),
-                  list(theta.val = parameter_list$theta,
+                  list(theta.val = parameter_list$angle,
                        drift.val = parameter_list$drift,
                        tzero.val = parameter_list$tzero,
                        boundary.val = parameter_list$boundary)), 
