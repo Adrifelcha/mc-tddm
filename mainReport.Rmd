@@ -1,0 +1,31 @@
+---
+title: "Monte Carlo approximation to a Categorical CDDM"
+author: "Adriana and Joachim"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: false
+    highlight: tango
+    fig_width: 12 
+    fig_height: 8 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Loading Custom Functions
+
+```{r}
+# R libraries needed
+library(here)
+# Load main loading function
+source(here("src/set_up", "load_functions.R"))
+load_allCustomFunctions(show=TRUE) # Call the rest of the functions
+```
+
+# Run a short-demonstration
