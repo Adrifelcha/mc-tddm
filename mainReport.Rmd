@@ -20,12 +20,165 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Loading Custom Functions
 
-```{r}
+This example requires a single R library: `here`.
+```{r, message=FALSE, results='hide'}
 # R libraries needed
 library(here)
+```
+
+All the custom functions written for this project are stored in the `/src/` folder. However, we only need to load the `load_functions.R` file in the `/src/set_up/` subfolder to call the rest of the custom functions in the `/src/` folder.
+
+```{r}
 # Load main loading function
 source(here("src/set_up", "load_functions.R"))
 load_allCustomFunctions(show=TRUE) # Call the rest of the functions
 ```
 
-# Run a short-demonstration
+# Run a short-demonstration, step by step
+
+## Step 1: Define true parameters
+
+We start by specifying the true parameters used to generate the data under the CDDM. In this first example, we'll use the same parameters as those [used by the EZCDDM authors in their parameter recovery demonstration](https://github.com/HasanQD/EZ-CDM/blob/main/Simple%20EZ-CDM.ipynb) of the EZCDDM system of equations.
+
+```{r}
+# Arbitrary parameter list
+par = list(drift = 2.0, angle = 0.2, boundary = 2, tzero = 0.6)
+
+# Complete the parameter list with the cartesian coordinates
+par <- complete_par_list(par)
+
+# Print the parameter list
+print(rbind(par))
+```
+
+## Step 2: Generate data
+
+```{r}
+# Number of trials in the dataset
+n = 1000
+```
+
+We use our random walk emulator to generate `r n` bivariate observations (choice and RT) from the CDDM, according to the parameters specified in Step 1.
+
+```{r}
+# Look for datafile and load if it exists, otherwise generate new data
+data_path = here("output", "mainReport_example1.RData")
+data <- load_or_generate_data(data_path, n, par, forceRun = FALSE)
+head(data, 10)
+```
+
+## Step 3: Compute parameter estimates
+
+As a reference point, we use the EZCDDM system of equations to obtain parameter estimates from the data generated. This step also helps us to validate our implementation of the EZCDDM forward and backward system of equations.
+
+```{r}
+# Compute summary statistics from the data generated in Step 2
+sumstats <- get_summaryStats(angular_vector = data$Response, rt_vector = data$RT)
+
+# Compute parameter estimates using these summary statistics
+ez <- ezcddm_getParameters(sumstats)
+
+# Combine the true parameters with the EZCDDM parameter estimates
+results <- as.data.frame(rbind(c(par$drift, par$boundary, par$tzero, par$angle),
+                               c(ez$drift_length, ez$bound, ez$ndt, ez$drift_angle)))
+colnames(results) <- c("Drift_length", "Boundary", "Non-decision_time", "Drift_angle")
+rownames(results) <- c("True", "EZCDDM")
+round(results, 4)
+```
+
+## Step 4: Convert angular choices to categorical responses
+
+The categorical extension of the CDDM is conceptually built on the addition of a set of cut points along the circular response space to define arcs of the circumference that represent identical responses (i.e., a categorical response). 
+
+We use the data we generated from the standard CDDM model to fabricate categorical responses by looking at which arcs the choices fall into. 
+
+```{r example-1, echo=FALSE, results='hide'}
+# Number of categories
+nCat = 4
+
+# Obtain category labels
+categories = LETTERS[1:nCat]   # Obtaining category labels
+print(categories)
+
+# Obtain cut points for the categories (equally spaced on the circle; remove the closed point)
+cut_points = seq(0, 2*pi, length.out = nCat+1)[-(nCat+1)]
+print(round(cut_points, 3))
+```
+
+
+In our approximation, we assume that the number of categories is known and that they are equally spaced on the circumference. For this first example, we start with `r nCat` cut points to define `r nCat` categories (labeled as `r paste(categories, collapse = ", ")`).
+
+```{r example-1}
+```
+
+Then, we use our `get_categorical_choices` custom function to convert the angular choices generated from the CDDM into categorical responses, depending on which arc of the circumference they fall into.
+```{r}
+# Convert choices to categorical values
+data <- get_categorical_choices(data, cut_points, categories)
+head(data, 10)
+```
+
+```{r, echo=FALSE, message=FALSE, results='hide'}
+fig1_path = here("output", "figures", "mainReport_example1_data.png")
+png(fig1_path, width = 800, height = 800)
+plot_choices_circle(data = data, parameter_list = par, cut_points = cut_points,
+                      categories = categories)
+dev.off()
+```
+
+As such, the data used for this example looks like:
+```{r, echo=FALSE, fig.align='center', fig.width=2, fig.height=2}
+knitr::include_graphics(fig1_path)
+```
+
+## Step 5: Monte Carlo approximation to the categorical CDDM
+
+```{r nIter}
+# Number of iterations for the Monte Carlo approximation
+nIter = 1000
+```
+
+We run the Monte Carlo approximation over `r nIter` iterations. In each iteration, we:
+
+1) Ignore the actual angular choices generated from the CDDM
+2) Look at the 'categorical choices' and replace them with a random angle falling within the corresponding arc
+3) Use the EZCDDM system of equations to estimate the parameters from the resulting dataset
+
+By repeating the process `r nIter` times, we obtain a distribution of parameter estimates for every dataset generated.
+```{r}
+# Initialize a matrix to store the parameter estimates
+estimates <- matrix(NA, nrow = nIter, ncol = 4)
+
+# Loop over the number of iterations
+for(i in 1:nIter){
+    set.seed(i) # Set seed for reproducibility
+    tmp <- get_choice_in_arc(data, cut_points, categories)
+    tmp_sumstats <- get_summaryStats(angular_vector = tmp$Sim_choice, rt_vector = tmp$RT)
+    tmp_estimates <- ezcddm_getParameters(tmp_sumstats)
+    estimates[i, ] <- c(tmp_estimates$drift_length, tmp_estimates$bound, tmp_estimates$ndt, tmp_estimates$drift_angle)
+}
+```
+
+We look at the average parameter estimates obtained across all iterations.
+```{r}
+update_results <-rbind(results, apply(estimates, 2, mean))
+rownames(update_results) <- c(rownames(results), "MC-EZCDDM")
+
+print(update_results)
+```
+
+# Increase the number of categories
+
+```{r}
+# Number of categories
+nCat = 16
+
+sample2 <- run_short_MCroutine(n = n, nCat = nCat, nIter = nIter, show=FALSE, 
+                               data_path = data_path,
+                               forceRun = FALSE,
+                               par = par,
+                               fig1_path = here("output", "figures", "mainReport_example2_data.png"),
+                               fig2_path = here("output", "figures", "mainReport_example2_recovery.png"))
+
+print(sample2)
+```
