@@ -8,7 +8,7 @@
 ruler <- paste(rep("=", 60), collapse = "")
 sub_ruler <- paste(rep("-", 40), collapse = "")
 
-load_allCustomFunctions <- function(source_dir = here("src")) {
+load_allCustomFunctions <- function(source_dir = here("src"), show = TRUE) {
   ruler <- paste(rep("=", 60), collapse = "")
   sub_ruler <- paste(rep("-", 40), collapse = "")
 
@@ -23,9 +23,11 @@ load_allCustomFunctions <- function(source_dir = here("src")) {
   # Loop through each directory
   for (dir_path in src_dirs) {
     dir_name <- basename(dir_path)
-    cat(sub_ruler, "\n")
-    cat(paste(" Subdirectory:", dir_name, "\n"))
-    cat(sub_ruler, "\n")
+    if(show){
+              cat(sub_ruler, "\n")
+              cat(paste(" Subdirectory:", dir_name, "\n"))
+              cat(sub_ruler, "\n")
+    }
     
     # Get all R files in the current directory
     r_files <- list.files(dir_path, pattern = "\\.R$", full.names = TRUE)
@@ -33,28 +35,30 @@ load_allCustomFunctions <- function(source_dir = here("src")) {
     # Source each R file
     for (r_file in r_files) {
       file_name <- basename(r_file)
-      cat(paste("  Sourcing:", file_name, "\n"))
+      if(show){ cat(paste("  Sourcing:", file_name, "\n"))  }
       source(r_file)
     }
     
-    cat("\n") # Add vertical space between directories
+    if(show){ cat("\n") } # Add vertical space between directories
   }
   
   # Also source any R files directly in the source directory
   r_files_root <- list.files(source_dir, pattern = "\\.R$", full.names = TRUE)
   if (length(r_files_root) > 0) {
-    cat(sub_ruler, "\n")
-    cat(paste(" Root directory:", basename(source_dir), "\n"))
-    cat(sub_ruler, "\n")
+    if(show){
+      cat(sub_ruler, "\n")
+      cat(paste(" Root directory:", basename(source_dir), "\n"))
+      cat(sub_ruler, "\n")
+    }
     
     for (r_file in r_files_root) {
       file_name <- basename(r_file)
-      cat(paste("  Sourcing:", file_name, "\n"))
+      if(show){ cat(paste("  Sourcing:", file_name, "\n"))  }
       source(r_file)
     }
     
-    cat("\n")
+    if(show){ cat("\n") }
   }
   
-  cat(" All custom functions loaded successfully!\n")  
+  cat(" All custom functions loaded successfully!\n")
 }
