@@ -167,7 +167,15 @@ rownames(update_results) <- c(rownames(results), "MC-EZCDDM")
 print(update_results)
 ```
 
+The mean parameter estimates obtained from the Monte Carlo approximation are not doing a good job of recovering the true parameters. We know the problem is not in our implementation of the EZCDDM system of equations, because the parameter estimates obtained from the data simulated from the actual model are very close to the true parameters.
+
+In the following sections, we continue to explore our Monte Carlo approximation by trying different numbers of categorias, trial size, Monte Carlo iterations, and different parameter values.
+
 # Increase the number of categories
+
+Looking at the circular choice plot presented on our first example, we see that most choices fall into two categories. Despite angular choices following a von Mises distribution, our Monte Carlo approximation generates angles within the arcs covering half of the circumference with equal probability.
+
+In this section, we present a more extreme scenario where we test our Monte Carlo approximation with an increased number of categories.
 
 ```{r}
 # Number of categories
@@ -179,6 +187,16 @@ sample2 <- run_short_MCroutine(n = n, nCat = nCat, nIter = nIter, show=FALSE,
                                par = par,
                                fig1_path = here("output", "figures", "mainReport_example2_data.png"),
                                fig2_path = here("output", "figures", "mainReport_example2_recovery.png"))
+```
 
+By setting `forceRun = FALSE` in the `run_short_MCroutine` function, we guarantee that the data used for this example is the same as the one used in the first example.
+
+```{r, echo=FALSE, fig.align='center', fig.width=2, fig.height=2}
+knitr::include_graphics(here("output", "figures", "mainReport_example2_data.png"))
+```
+
+```{r}
 print(sample2)
 ```
+
+
